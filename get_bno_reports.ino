@@ -35,7 +35,9 @@ static void add_report(int16_t buff, uint8_t id, uint8_t type){
     idx += 3;
 
     if(bufID[id][type]->idx == 255){
-        bufID[id][type]->idx = (id << 2) | type;      // XXXBBBSS B:bno S:sensor type -> labels data for file 
+        uint16_t outTime = millis() % 2048               // maximum timestamp size is 11 b
+        bufID[id][type]->time = outTime % 255;           // timestamp for file LSB
+        bufID[id][type]->idx = ((outTime / 256) << 5) | (id << 2) | type; // TTTBBBSS T: timestamp MSB B:bno S:sensor type -> labels data for file 
         sdQ.push(bufID[id][type]);
 
         bufID[id][type] = readQ.pop();
